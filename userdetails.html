@@ -40,6 +40,7 @@
             // Add an authentication state change listener
             onAuthStateChanged(auth, (user) => {
                 if (user) {
+                    console.log(user)
                     // User is signed in
                     userDetailsDiv.innerHTML = `
                         <p><strong>User ID:</strong> ${user.uid}</p>
@@ -53,6 +54,7 @@
                     signoutButton.style.display = 'none'; // Hide the sign-out button
                 }
             });
+
 
             // Add sign-out button functionality
             signoutButton.addEventListener('click', () => {
@@ -70,6 +72,7 @@
         catch (error) {
             console.log('Firebase initialization error:', error);
         }
+
     </script>
 </body>
 

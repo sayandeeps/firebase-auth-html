@@ -1,7 +1,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-analytics.js";
 
-import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-auth.js";
+import { getAuth, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-auth.js";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -43,3 +43,25 @@ signinForm.addEventListener('submit', (e) => {
             alert(`Sign in error: ${errorMessage}`);
         });
 });
+const googleSignInButton = document.getElementById('google-signin-button');
+googleSignInButton.addEventListener('click', () => {
+    const provider = new GoogleAuthProvider();
+
+    // Sign in with Google using a popup
+    signInWithPopup(auth, provider)
+        .then((userCredential) => {
+            // Signed in
+            const user = userCredential.user;
+            window.location.href = 'userdetails.html';
+            alert('Sign in with Google successful!');
+            console.log('User details:', user);
+
+
+        })
+        .catch((error) => {
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            alert(`Sign in with Google error: ${errorMessage}`);
+        });
+});
+
