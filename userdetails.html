@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Details</title>
+</head>
+
+<body>
+    <h1>Welcome, User!</h1>
+
+    <div id="user-details">
+        <!-- User details will be displayed here -->
+    </div>
+
+    <button id="signout-button">Sign Out</button>
+
+    <!-- Your Firebase configuration and initialization code -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-auth.js";
+
+        try {
+            const firebaseConfig = {
+                apiKey: "AIzaSyDdNA85YFPLf8M3xO47wW-CE1O5UUBuOsk",
+                authDomain: "userpage-33951.firebaseapp.com",
+                projectId: "userpage-33951",
+                storageBucket: "userpage-33951.appspot.com",
+                messagingSenderId: "950594980527",
+                appId: "1:950594980527:web:f536a29d10ed440367625a",
+                measurementId: "G-3YBFCE7D36"
+            };
+
+            const app = initializeApp(firebaseConfig);
+            const auth = getAuth(app);
+            const userDetailsDiv = document.getElementById('user-details');
+            const signoutButton = document.getElementById('signout-button');
+
+            // Add an authentication state change listener
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    // User is signed in
+                    userDetailsDiv.innerHTML = `
+                        <p><strong>User ID:</strong> ${user.uid}</p>
+                        <p><strong>Email:</strong> ${user.email}</p>
+                        <!-- Add more user details here as needed -->
+                    `;
+                    signoutButton.style.display = 'block'; // Show the sign-out button
+                } else {
+                    // User is signed out
+                    userDetailsDiv.innerHTML = 'User is signed out.';
+                    signoutButton.style.display = 'none'; // Hide the sign-out button
+                }
+            });
+
+            // Add sign-out button functionality
+            signoutButton.addEventListener('click', () => {
+                // Sign out the user
+                signOut(auth)
+                    .then(() => {
+                        // Redirect to the sign-in page or any other page as needed
+                        window.location.href = 'login.html';
+                    })
+                    .catch((error) => {
+                        console.error('Sign out error:', error);
+                    });
+            });
+        }
+        catch (error) {
+            console.log('Firebase initialization error:', error);
+        }
+    </script>
+</body>
+
+</html>
