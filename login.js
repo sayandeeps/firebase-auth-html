@@ -22,6 +22,8 @@ const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 const auth = getAuth(app);
 const signinForm = document.getElementById('signin-form');
+auth.languageCode = 'it';
+auth.useDeviceLanguage();
 signinForm.addEventListener('submit', (e) => {
     e.preventDefault(); // Prevent form submission
 
@@ -64,4 +66,8 @@ googleSignInButton.addEventListener('click', () => {
             alert(`Sign in with Google error: ${errorMessage}`);
         });
 });
+const phonelogin = document.getElementById("phonelogin")
+phonelogin.addEventListener('click', () => {
+    window.location.href = 'loginwithphone.html';
+})
 

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <section class="container phone-container">
+        <form id="loginForm">
+            <div>
+                <label for="phoneNumber">Phone Number</label> <br>
+                <input type="tel" id="phoneNumber" name="phoneNumber" /> <br>
+            </div>
+            <div>
+                <label for="code">Code</label> <br>
+                <input type="text" id="code" name="code" /> <br>
+            </div>
+            <div id="recaptcha-container"></div>
+            <button type="submit">Login</button>
+            <button type="button" id="getCode">Get Code</button>
+        </form>
+    </section>
+    <script type="module" src="phone.js"></script>
+</body>
+
+</html>
