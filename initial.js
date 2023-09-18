@@ -4,6 +4,8 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebas
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-analytics.js";
 
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-auth.js";
+import * as firebase from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
+
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -36,7 +38,9 @@ signupForm.addEventListener('submit', (e) => {
         .then((userCredential) => {
             // Signed in
             const user = userCredential.user;
+
             alert('Sign up successful!'); // You can replace this with your desired success handling
+            createUserCollection(user);
         })
         .catch((error) => {
             const errorCode = error.code;
