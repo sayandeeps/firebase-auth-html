@@ -2,11 +2,11 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebas
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-analytics.js";
 
 import { getAuth, RecaptchaVerifier, signInWithPhoneNumber } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-auth.js";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+import {
+    getFirestore, doc, setDoc
+} from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
 
 // Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
     apiKey: "AIzaSyDdNA85YFPLf8M3xO47wW-CE1O5UUBuOsk",
     authDomain: "userpage-33951.firebaseapp.com",
@@ -28,40 +28,62 @@ window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {}
 recaptchaVerifier.render().then((widgetId) => {
     window.recaptchaWidgetId = widgetId;
 });
-// const recaptchaResponse = grecaptcha.getResponse(recaptchaWidgetId);
-// console.log(recaptchaResponse)
 
 const getCodeButton = document.getElementById('getCode');
 
 getCodeButton.addEventListener('click', function (event) {
     event.preventDefault();
-    const phoneNumber = "+91" + (document.getElementById('phoneNumber')).value
+    const phoneNumber = "+91" + document.getElementById('phoneNumber').value;
     const appVerifier = window.recaptchaVerifier;
     signInWithPhoneNumber(auth, phoneNumber, appVerifier)
         .then((confirmationResult) => {
             // SMS sent. Prompt user to type the code from the message, then sign the
             // user in with confirmationResult.confirm(code).
             window.confirmationResult = confirmationResult;
-            // ...
-        }).catch((error) => {
-            // Error; SMS not sent
-            // ...
-            console.log(error)
+        })
+        .catch((error) => {
+            console.log(error);
         });
 });
+
+const loginForm = document.getElementById('loginForm');
+
 loginForm.addEventListener('submit', (e) => {
     e.preventDefault();
-    const code = (document.getElementById('code')).value;
-    confirmationResult.confirm(code).then((result) => {
-        // User signed in successfully.
-        alert("signed in")
-        const user = result.user;
-        console.log('User details:', user);
-        window.location.href = 'userdetails.html';
-        // ...
-    }).catch((error) => {
-        // User couldn't sign in (bad verification code?)
-        // ...
-    });
-})
+    const code = document.getElementById('code').value;
+    confirmationResult.confirm(code)
+        .then(async (result) => {
+            // User signed in successfully.
+            alert("Signed in successfully");
+            const user = result.user;
+            console.log('User details:', user);
 
+            // Add user data to Firestore
+            const db = getFirestore();
+            const data = {
+                useruid: user.uid,
+                userdisplayname: user.displayName || "N/A",
+                userphotourl: user.photoURL || "N/A",
+                useremail: user.email || "N/A",
+                userphone: user.phoneNumber || "N/A",
+                usergender: "N/A",
+                useraddress: "N/A",
+                userorganization: "N/A",
+                userdesignation: "N/A"
+            };
+
+            const docRef = doc(db, "userlist", user.uid);
+
+            try {
+                await setDoc(docRef, data);
+                console.log("Data added to Firestore successfully.");
+                window.location.href = 'userdetails.html';
+            } catch (error) {
+                console.error("Error adding data to Firestore:", error);
+            }
+        })
+        .catch((error) => {
+            // User couldn't sign in (bad verification code?)
+            console.log(error);
+        });
+});

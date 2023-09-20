@@ -1,16 +1,11 @@
-
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-analytics.js";
 
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-auth.js";
-import * as firebase from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
-
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-auth.js";
+import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
 
 // Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
     apiKey: "AIzaSyDdNA85YFPLf8M3xO47wW-CE1O5UUBuOsk",
     authDomain: "userpage-33951.firebaseapp.com",
@@ -36,11 +31,12 @@ signupForm.addEventListener('submit', (e) => {
 
     createUserWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
-            // Signed in
+            // Signed up successfully
             const user = userCredential.user;
 
             alert('Sign up successful!'); // You can replace this with your desired success handling
             createUserCollection(user);
+
         })
         .catch((error) => {
             const errorCode = error.code;
@@ -48,3 +44,30 @@ signupForm.addEventListener('submit', (e) => {
             alert(`Sign up error: ${errorMessage}`);
         });
 });
+
+function createUserCollection(user) {
+    // Add user data to Firestore
+    const db = getFirestore();
+    const data = {
+        useruid: user.uid,
+        userdisplayname: "N/A", // You can customize this
+        userphotourl: "N/A",     // You can customize this
+        useremail: user.email || "N/A",
+        userphone: "N/A",        // You can customize this
+        usergender: "N/A",       // You can customize this
+        useraddress: "N/A",      // You can customize this
+        userorganization: "N/A", // You can customize this
+        userdesignation: "N/A"   // You can customize this
+    };
+
+    const docRef = doc(db, "userlist", user.uid);
+
+    setDoc(docRef, data)
+        .then(() => {
+            console.log("User data added to Firestore successfully.");
+            window.location.href = 'login.html';
+        })
+        .catch((error) => {
+            console.error("Error adding user data to Firestore:", error);
+        });
+}

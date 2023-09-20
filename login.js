@@ -58,14 +58,11 @@ googleSignInButton.addEventListener('click', () => {
         .then((userCredential) => {
             // Signed in
             const user = userCredential.user;
-            window.location.href = 'userdetails.html';
 
-            alert('Sign in with Google successful!');
             console.log('User details:', user.uid);
 
-
-            //adding in firestore 
-            async function adddoc_uid() {
+            // Define a function to add data to Firestore and return a Promise
+            async function addDataToFirestore() {
                 const data = {
                     useruid: user.uid,
                     userdisplayname: user.displayName,
@@ -80,29 +77,31 @@ googleSignInButton.addEventListener('click', () => {
 
                 const docRef = doc(db, "userlist", user.uid);
 
-                // Check if the document already exists before adding it
-                getDoc(docRef)
-                    .then((docSnapshot) => {
-                        if (!docSnapshot.exists()) {
-                            // Document doesn't exist, so add it
-                            setDoc(docRef, data)
-                                .then(() => {
-                                    console.log("Data added since the document didn't exist.");
-                                })
-                                .catch((error) => {
-                                    console.error("Error:", error);
-                                });
-                        } else {
-                            console.log("Document already exists. No data added.");
-                        }
-                    })
-                    .catch((error) => {
-                        console.error("Error checking document existence:", error);
-                    });
+                try {
+                    const docSnapshot = await getDoc(docRef);
+                    if (!docSnapshot.exists()) {
+                        await setDoc(docRef, data);
+                        console.log("Data added since the document didn't exist.");
+                    } else {
+                        console.log("Document already exists. No data added.");
+                    }
+                } catch (error) {
+                    console.error("Error:", error);
+                }
             }
-            adddoc_uid()
 
-
+            // Call the function to add data to Firestore and wait for it to complete
+            addDataToFirestore()
+                .then(() => {
+                    // After adding data to Firestore is complete, show alert and redirect
+                    alert('Sign in with Google successful!');
+                    window.location.href = 'userdetails.html';
+                })
+                .catch((error) => {
+                    const errorCode = error.code;
+                    const errorMessage = error.message;
+                    alert(`Error adding data to Firestore: ${errorMessage}`);
+                });
         })
         .catch((error) => {
             const errorCode = error.code;
@@ -117,7 +116,6 @@ phonelogin.addEventListener('click', () => {
 
 const fb = document.getElementById('fb')
 
-
 fb.addEventListener('click', () => {
     const provider = new FacebookAuthProvider();
     signInWithPopup(auth, provider)
@@ -125,13 +123,15 @@ fb.addEventListener('click', () => {
             // The signed-in user info.
             const user = result.user;
 
-
             // This gives you a Facebook Access Token. You can use it to access the Facebook API.
             const credential = FacebookAuthProvider.credentialFromResult(result);
             const accessToken = credential.accessToken;
-            alert('Sign in with Google successful!');
-            window.location.href = 'userdetails.html';
 
+            // Add user data to Firestore
+            createUserCollection(user);
+
+            alert('Sign in with Facebook successful!');
+            window.location.href = 'userdetails.html';
 
             // IdP data available using getAdditionalUserInfo(result)
             // ...
@@ -147,11 +147,35 @@ fb.addEventListener('click', () => {
 
             // ...
         });
+});
 
+function createUserCollection(user) {
+    // Add user data to Firestore
+    const db = getFirestore();
+    const data = {
+        useruid: user.uid,
+        userdisplayname: user.displayName || "N/A",
+        userphotourl: user.photoURL || "N/A",
+        useremail: user.email || "N/A",
+        userphone: "N/A",        // You can customize this
+        usergender: "N/A",       // You can customize this
+        useraddress: "N/A",      // You can customize this
+        userorganization: "N/A", // You can customize this
+        userdesignation: "N/A"   // You can customize this
+    };
 
-})
-const github = document.getElementById('github')
+    const docRef = doc(db, "userlist", user.uid);
 
+    setDoc(docRef, data)
+        .then(() => {
+            console.log("User data added to Firestore successfully.");
+        })
+        .catch((error) => {
+            console.error("Error adding user data to Firestore:", error);
+        });
+}
+
+const github = document.getElementById('github');
 
 github.addEventListener('click', () => {
     const provider = new GithubAuthProvider();
@@ -163,13 +187,17 @@ github.addEventListener('click', () => {
 
             // The signed-in user info.
             const user = result.user;
-            alert('Sign in was successful!');
-            window.location.href = 'userdetails.html';
 
+            // Add user data to Firestore
+            createUserCollection(user);
+
+            alert('Sign in with GitHub was successful!');
+            window.location.href = 'userdetails.html';
 
             // IdP data available using getAdditionalUserInfo(result)
             // ...
-        }).catch((error) => {
+        })
+        .catch((error) => {
             // Handle Errors here.
             const errorCode = error.code;
             const errorMessage = error.message;
@@ -177,11 +205,42 @@ github.addEventListener('click', () => {
             const email = error.customData.email;
             // The AuthCredential type that was used.
             const credential = GithubAuthProvider.credentialFromError(error);
-            alert("error")
-            console.log(error)
+
+            alert("Error signing in with GitHub");
+            console.log(error);
             // ...
         });
+});
+
+function createUserCollection(user) {
+    // Add user data to Firestore
+    const db = getFirestore();
+    const data = {
+        useruid: user.uid,
+        userdisplayname: user.displayName || "N/A",
+        userphotourl: user.photoURL || "N/A",
+        useremail: user.email || "N/A",
+        userphone: "N/A",        // You can customize this
+        usergender: "N/A",       // You can customize this
+        useraddress: "N/A",      // You can customize this
+        userorganization: "N/A", // You can customize this
+        userdesignation: "N/A"   // You can customize this
+    };
+
+    const docRef = doc(db, "userlist", user.uid);
+
+    setDoc(docRef, data)
+        .then(() => {
+            console.log("User data added to Firestore successfully.");
+        })
+        .catch((error) => {
+            console.error("Error adding user data to Firestore:", error);
+        });
+}
 
 
 
+const signup = document.getElementById('signup')
+signup.addEventListener("click", () => {
+    window.location.href = 'signuppage.html';
 })
