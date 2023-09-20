@@ -128,7 +128,7 @@ fb.addEventListener('click', () => {
             const accessToken = credential.accessToken;
 
             // Add user data to Firestore
-            createUserCollection(user);
+            createUserCollectionfb(user);
 
             alert('Sign in with Facebook successful!');
             window.location.href = 'userdetails.html';
@@ -149,7 +149,7 @@ fb.addEventListener('click', () => {
         });
 });
 
-function createUserCollection(user) {
+function createUserCollectionfb(user) {
     // Add user data to Firestore
     const db = getFirestore();
     const data = {
@@ -189,7 +189,7 @@ github.addEventListener('click', () => {
             const user = result.user;
 
             // Add user data to Firestore
-            createUserCollection(user);
+            createUserCollectiongit(user);
 
             alert('Sign in with GitHub was successful!');
             window.location.href = 'userdetails.html';
@@ -212,7 +212,7 @@ github.addEventListener('click', () => {
         });
 });
 
-function createUserCollection(user) {
+function createUserCollectiongit(user) {
     // Add user data to Firestore
     const db = getFirestore();
     const data = {
@@ -240,7 +240,3 @@ function createUserCollection(user) {
 
 
 
-const signup = document.getElementById('signup')
-signup.addEventListener("click", () => {
-    window.location.href = 'signuppage.html';
-})
